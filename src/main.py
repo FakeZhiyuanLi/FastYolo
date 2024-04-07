@@ -1,7 +1,10 @@
 from tkinter import *
 from PIL import Image, ImageTk
-import pybboxes
+from augment import aug
 import customtkinter
+import pybboxes
+import imgaug as ia
+import imgaug.augmenters as iaa
 import yaml
 import os
 
@@ -167,23 +170,26 @@ class App(customtkinter.CTk):
 
     def finishedEvent(self):
         yoloBoundingBoxes = []
+        reducedImages = []
         for imageIdx, arr in enumerate(boundingBoxes):
             currConvert = []
             for boundingBox in arr:
                 height = boundingBox[4]-boundingBox[2]
                 width = boundingBox[3]-boundingBox[1]
-                print(width, height)
-                print(boundingBox[1:5])
+                # print(width, height)
+                # print(boundingBox[1:5])
                 converted = list(pybboxes.convert_bbox(boundingBox[1:5], from_type="voc", to_type="yolo", image_size=(640, 640)))
                 currConvert.append([classIndexes[boundingBox[0]], converted[0], converted[1], converted[2], converted[3]])
             yoloBoundingBoxes.append(currConvert)
-        print(yoloBoundingBoxes)
+        # print(yoloBoundingBoxes)
         for i, image in enumerate(rawImageLocations):
             reducedImage = Image.open(f'{basePath}/rawImages/{image}').resize((640, 640)).rotate(-90)
             reducedImage.save(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/raw/{image}')
+            reducedImages.append(reducedImage)
             with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/raw/{image[:-4]}.txt', 'w') as f:
                 for box in yoloBoundingBoxes[i]:
                     f.write(f'{box[0]} {box[1]} {box[2]} {box[3]} {box[4]} \n')
+        aug(reducedImages, yoloBoundingBoxes, epochs=5)
 
 def getMouseLocation(e):
     global x, y
