@@ -55,7 +55,7 @@ seq = iaa.Sequential([
 
 def aug(pilImages, boundingBoxes, epochs):
     count = 0
-    for _ in range(epochs):
+    for j in range(epochs):
         classes = []
         tempImages = []
         for image in pilImages:
@@ -80,11 +80,19 @@ def aug(pilImages, boundingBoxes, epochs):
                 yoloConvert = VOCtoYOLO([box.label, box.x1, box.y1, box.x2, box.y2])
                 labelOutputs.append(yoloConvert)
             imageOutput = Image.fromarray(image_aug)
-            imageOutput.save(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/augmentedImages/{count}.jpg')
-            with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/labels/{count}.txt', "w") as out:
-                for output in labelOutputs:
-                    out.write(f"{output} \n")
-            count += 1
+
+            if j <= epochs/2:
+                imageOutput.save(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/train/images/{count}.jpg')
+                with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/train/labels/{count}.txt', "w") as out:
+                    for output in labelOutputs:
+                        out.write(f"{output[0]} {output[1]} {output[2]} {output[3]} {output[4]} \n")
+                count += 1
+            else:
+                imageOutput.save(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/val/images/{count}.jpg')
+                with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/val/labels/{count}.txt', "w") as out:
+                    for output in labelOutputs:
+                        out.write(f"{output[0]} {output[1]} {output[2]} {output[3]} {output[4]} \n")
+                count += 1
 
 if __name__ == "__main__":
     print(YOLOtoVOC([0, 0.18515625, 0.2109375, 0.1296875, 0.175]))

@@ -26,6 +26,14 @@ boundingBoxes = [[] for x in range(numImages)]
 currentBounds = boundingBoxes[imageIndex]
 currentClass = "NaN"
 
+yamlDict = {
+    "path": '/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/',
+    "train": 'train/images',
+    "val": 'val/images',
+    "nc": 2,
+    "names": f"['weed' 'not weed']",
+}
+
 def setHovering(self):
     global imageHovering
     imageHovering = True
@@ -189,7 +197,9 @@ class App(customtkinter.CTk):
             with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/raw/{image[:-4]}.txt', 'w') as f:
                 for box in yoloBoundingBoxes[i]:
                     f.write(f'{box[0]} {box[1]} {box[2]} {box[3]} {box[4]} \n')
-        aug(reducedImages, yoloBoundingBoxes, epochs=5)
+        aug(reducedImages, yoloBoundingBoxes, epochs=10)
+        with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/a.yaml', 'w') as out:
+            yaml.dump(yamlDict, out, default_flow_style=False)
 
 def getMouseLocation(e):
     global x, y
