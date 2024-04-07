@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 from augment import aug
+from train import tr
 import customtkinter
 import pybboxes
 import imgaug as ia
@@ -69,6 +70,13 @@ def mouseDownEvent(self):
         startX = x
         startY = y
 
+class CompletedPopup(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("250x100")
+
+        self.label = customtkinter.CTkLabel(self, text="Successfully augmented images")
+        self.label.pack(padx=20, pady=20)
 
 class classPicker(customtkinter.CTkScrollableFrame):
     def __init__ (self, parent, title, values):
@@ -142,6 +150,7 @@ class App(customtkinter.CTk):
         self.doneButton = customtkinter.CTkButton(self, text="Done", command=self.finishedEvent)
         self.doneButton.grid(row=3, column=3, padx=10, pady=10, sticky="ew")
 
+        self.completedPopup = None
 
     def addClassEvent(self):
         className = self.classEntry.get()
@@ -198,8 +207,15 @@ class App(customtkinter.CTk):
                 for box in yoloBoundingBoxes[i]:
                     f.write(f'{box[0]} {box[1]} {box[2]} {box[3]} {box[4]} \n')
         aug(reducedImages, yoloBoundingBoxes, epochs=10)
-        with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/a.yaml', 'w') as out:
-            yaml.dump(yamlDict, out, default_flow_style=False)
+        if self.completedPopup is None or not self.completedPopup.winfo_exists():
+            self.completedPopup = CompletedPopup(self)  # create window if its None or destroyed
+        else:
+            self.completedPopup.focus()  # if window exists focus it
+        # doesn't work
+        # with open(f'/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/edited/a.yaml', 'w') as out:
+            # yaml.dump(yamlDict, out, default_flow_style=False)
+        # tr('models/yolov8n.pt')
+        # self.destroy()
 
 def getMouseLocation(e):
     global x, y
