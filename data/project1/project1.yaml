@@ -1,0 +1,6 @@
+path: '/Users/zhiyuan/Desktop/ThomasTheDankEngineCode/Python/ML/FastYolo/data/project1/'
+train: 'train/images'
+val: 'valid/images'
+
+nc: 1
+names: ['weed']
